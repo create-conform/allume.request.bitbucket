@@ -69,12 +69,12 @@
                     headers["Authorization"] = "Bearer " + bbToken;
                 }
                 else if (bbUsername) {
-                    headers["Authorization"] = "Basic " + (bbUsername + ":" + (bbPassword ? bbPassword : "")).toBase64();
+                    headers["Authorization"] = "Basic " + string.toBase64((bbUsername + ":" + (bbPassword ? bbPassword : "")));
                 }
 
                 if (bbBranch) {
                     if (!direct) {
-                        selector.uri = "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + bbBranch + ".tar.gz";
+                        selector.uri = selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + bbBranch + ".tar.gz").toString();
                     }
                     else {
                         selector.uri.path += "/get/" + bbBranch + ".tar.gz";
@@ -100,7 +100,7 @@
                                 }
                                 else if (uriList && uriList.code) {
                                     console.error("Cache disk error.", uriList);
-                                    resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz") : null);
+                                    resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString()) : null);
                                 }
                                 var cache = {};
                                 for (var u in uriList) {
@@ -132,12 +132,12 @@
                                     }
                                     else {
                                         // download new uri and save to cache
-                                        io.URI.open((tag.target.hash.substr(0,4) == "http"? tag.target.hash : "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz")).then(function(repoStream) {
+                                        io.URI.open((tag.target.hash.substr(0,4) == "http"? tag.target.hash : selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString())).then(function(repoStream) {
                                             function repoFail() {
                                                 repoStream.close().then(repoResolve, repoResolve);
                                             }
                                             function repoResolve() {
-                                                resolveURI((tag.target.hash.substr(0,4) == "http"? tag.target.hash : "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz"));
+                                                resolveURI((tag.target.hash.substr(0,4) == "http"? tag.target.hash : selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString()));
                                             };
                                             
                                             var cacheURI = cacheVolume.getURI(PATH_CACHE + id + "." + EXT_PKX);
@@ -172,11 +172,11 @@
                             cacheVolume.query(PATH_CACHE + (direct? (directRepo + "/") : (selector.repository.namespace + (selector.repository.namespace != ""? "/" : "")))).then(cacheQueryDone, cacheQueryDone);
                         }, function() {
                             // cache path error
-                            resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz") : null);
+                            resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString()) : null);
                         });
                     }
                     else {
-                        resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz") : null);
+                        resolveURI(tag? (tag.target.hash.substr(0,4) == "http"? tag.target.hash : selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString()) : null);
                     }
 
                     function resolveURI(uri) {
@@ -193,7 +193,7 @@
                                 reject(new Error("Downloading of package '" + selector.package + "' from BitBucket failed. If you are running this in a browser, CORS might be the problem."));
                             }
                             else if (tag) {
-                                tag.target.hash = selector.parseURI(URI_PATH_CORS_PROXY + "https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString();
+                                tag.target.hash = selector.parseURI(URI_PATH_CORS_PROXY + selector.parseURI("https://" + HOST_BITBUCKET + selector.repository.url.substr(selector.repository.url.lastIndexOf("/", selector.repository.url.length - 2)) + URI_PATH_BITBUCKETAPI_BRANCH_TEMPLATE + tag.target.hash + ".tar.gz").toString()).toString();
                                 triedCORSProxy = true;
 
                                 bbDone(tag);
