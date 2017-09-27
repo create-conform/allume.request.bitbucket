@@ -62,7 +62,7 @@
                 var bbPassword = bbConf? bbConf.password : null;
                 var bbToken = bbConf? bbConf.token : null;
                 var bbBranch = bbConf? bbConf.branch : null;
-                var bbEnablePreRelease = bbConf? bbConf.enablePreRelease : null;
+                var bbEnableCORSProxy = bbConf && bbConf.enableCORSProxy != null? bbConf.enableCORSProxy : false;
                 var bbEnableCache = bbConf && bbConf.enableCache != null? bbConf.enableCache : true;
 
                 if (bbToken) {
@@ -189,7 +189,7 @@
                             return;
                         }
                         else if (!uri && tagErr) {
-                            if (!tag || triedCORSProxy) {
+                            if (!tag || triedCORSProxy || !enableCORSProxy) {
                                 reject(new Error("Downloading of package '" + selector.package + "' from BitBucket failed. If you are running this in a browser, CORS might be the problem."));
                             }
                             else if (tag) {
