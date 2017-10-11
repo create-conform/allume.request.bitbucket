@@ -1,13 +1,15 @@
 {
   "name": "allume.request.bitbucket",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "title": "Allume Request BitBucket Library",
   "description": "Allume request module for fetching releases from BitBucket.",
-  "main": "bitbucket.js",
-  "pkxDependencies": [
-    "cc.version.0.1",
-    "cc.string.0.1",
-    "cc.config.0.1",
-    "cc.io.0.1"
-  ]
+  "pkx" : {
+    "main": "bitbucket.js",
+    "dependencies": [
+      "cc.version.0.2",
+      "cc.string.0.2",
+      "cc.config.0.2",
+      "cc.io.0.2"
+    ]
+  }
 }
